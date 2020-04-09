@@ -9,6 +9,10 @@ const ImageZoomViewer = props => {
                 viisble={true}  
                 animationType="slide"
             >   
+                <Button 
+                    title="DELETE"
+                    onPress={props.removeImg}
+                />
                 <View style={styles.wrapper1}>
                     <ImageViewer
                         imageUrls={props.img}

@@ -1,10 +1,11 @@
 import React, { Component } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Button } from "react-native";
 import ImageView from '../components/ImageView';
 import Grid from 'react-native-grid-component';
 import images from '../helpers/ImagesImporter';
 import ImageZoomViewer from '../components/ImageZoomViewer';
 import { TouchableOpacity } from "react-native-gesture-handler";
+import ImagePicker from '../components/ImgPicker';
 
 
 class HomeScreen extends Component{
@@ -16,6 +17,8 @@ class HomeScreen extends Component{
   state = {
     modalVisible: false,
     imageIndex: 0,
+    imgPickerVisible: false,
+    imageList: images
   }
 
   showImgBig =(i)=>{
@@ -32,7 +35,7 @@ class HomeScreen extends Component{
   }
 
   increaseImgIndex = () =>{
-    if(this.state.imageIndex < images.length-1){
+    if(this.state.imageIndex < this.state.imageList.length-1){
       this.setState({
         imageIndex: this.state.imageIndex + 1
       })
@@ -60,26 +63,65 @@ class HomeScreen extends Component{
   );
  
   _renderPlaceholder = i => <View style={styles.item} key={i} />;
+
+  setImgPickerVisible = () =>{
+    this.setState({imgPickerVisible: true})
+  }
+
+  hideImgPicker = () =>{
+    this.setState({imgPickerVisible: false})
+  }
+
+  addImage = (newImgSrc) =>{
+    this.setState({
+       imageList: [...this.state.imageList,
+        {
+          url:  newImgSrc ,
+          props: {
+              source: { uri: newImgSrc }
+        }
+      } 
+    ]
+  })
+  }
+
+  removeImg = () => {
+      let array = [...this.state.imageList]
+      array.splice(this.state.imageIndex, 1)
+      this.setState({imageList: array})
+  }
  
   render(){
-    const {modalVisible, imageIndex} = this.state
+    console.log(this.state.imageList)
+    const {modalVisible, imageIndex, imgPickerVisible, imageList} = this.state
     return(
      <>
+      <Button 
+        title="ADD"
+        onPress={this.setImgPickerVisible}
+      />
+      {imgPickerVisible &&
+        <ImagePicker 
+          hideImgPicker = {this.hideImgPicker}
+          addImage = {this.addImage}
+        />
+      }
       {modalVisible && 
           <ImageZoomViewer 
-            img={images}
-            hideFunc={this.hideImgBig}
-            imageIndex={imageIndex}
-            setImgIndex={this.setImgIndex}
-            increaseImgIndex={this.increaseImgIndex}
-            decreaseImgIndex={this.decreaseImgIndex}
+            img = {imageList}
+            hideFunc = {this.hideImgBig}
+            imageIndex = {imageIndex}
+            setImgIndex = {this.setImgIndex}
+            increaseImgIndex = {this.increaseImgIndex}
+            decreaseImgIndex = {this.decreaseImgIndex}
+            removeImg = {this.removeImg}
           />
       }
       <Grid
           style={styles.list}
           renderItem={this._renderItem}
           renderPlaceholder={this._renderPlaceholder}
-          data = {images} 
+          data = {imageList} 
           numColumns={2}
       />
      </>
