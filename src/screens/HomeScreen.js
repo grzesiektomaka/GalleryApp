@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StyleSheet, View, Button } from "react-native";
+import { StyleSheet, View, Button, Text } from "react-native";
 import ImageView from '../components/ImageView';
 import Grid from 'react-native-grid-component';
 import images from '../helpers/ImagesImporter';
@@ -18,7 +18,8 @@ class HomeScreen extends Component{
     modalVisible: false,
     imageIndex: 0,
     imgPickerVisible: false,
-    imageList: images
+    imageList: images,
+    showEmptyMsg: false
   }
 
   showImgBig =(i)=>{
@@ -81,7 +82,8 @@ class HomeScreen extends Component{
               source: { uri: newImgSrc }
         }
       } 
-    ]
+    ],
+    showEmptyMsg: false
   })
   }
 
@@ -90,15 +92,26 @@ class HomeScreen extends Component{
       array.splice(this.state.imageIndex, 1)
       this.setState({imageList: array})
   }
+
+  deleteAll = () => {
+    this.setState({
+      imageList: [],
+      showEmptyMsg: true
+    })
+  }
  
   render(){
     console.log(this.state.imageList)
-    const {modalVisible, imageIndex, imgPickerVisible, imageList} = this.state
+    const {modalVisible, imageIndex, imgPickerVisible, imageList, showEmptyMsg} = this.state
     return(
      <>
       <Button 
         title="ADD"
         onPress={this.setImgPickerVisible}
+      />
+      <Button 
+        title="DELETE ALL"
+        onPress={this.deleteAll}
       />
       {imgPickerVisible &&
         <ImagePicker 
@@ -116,6 +129,9 @@ class HomeScreen extends Component{
             decreaseImgIndex = {this.decreaseImgIndex}
             removeImg = {this.removeImg}
           />
+      }
+      {showEmptyMsg  &&
+        <Text>{'Your Gallery is empty'}</Text>
       }
       <Grid
           style={styles.list}
